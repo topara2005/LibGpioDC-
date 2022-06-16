@@ -45,7 +45,7 @@ void eventHandler(){
         //waits for an event
         auto irq=ln_pushButton.event_wait(::std::chrono::seconds(1));
         if(irq){
-          std::cout<<"Event read.."<<std::endl;
+          std::cout<<"Event read...look mom: handling an IRQ at user level space....."<<std::endl;
           auto event=ln_pushButton.event_read();
           if (event.event_type == ::gpiod::line_event::FALLING_EDGE)
             std::cout << " FALLING EDGE";
