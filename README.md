@@ -1,4 +1,4 @@
-# LibGpioDC-
+# LibGpioDC
 An example for LibGpiod in c++ using threads for listening to events on gpio 26 using a raspberry PI 4.
  Listens for falling edge events. A Pullup resistor must be connected to 3.3v on PIN 26. A led with a resistor on PIN 13 of the PI
  
