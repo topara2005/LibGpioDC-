@@ -8,4 +8,5 @@ An example for LibGpiod in c++ using threads for listening to events on gpio 26 
   
 how to build:
 g++ -std=c++1z -lgpiodcxx -lpthread -D_GLIBCXX_USE_NANOSLEEP -lboost_system -lpaho-mqttpp3 -lpaho-mqtt3as -lcrypto -lssl  -c /home/pi/interrupts/Main.cpp -o /home/pi/interrupts/Main.o
+
 g++  -o /home/pi/interrupts/Main /home/pi/interrupts/Main.o   -lgpiodcxx -lpthread -lboost_system -lpaho-mqttpp3 -lpaho-mqtt3as
