@@ -5,28 +5,28 @@
 #include <thread>
 #include <chrono>
 #include <string.h>
- #include <mutex>
- #include <cstring>
-  #include <atomic>
-  #include <iostream>
+#include <mutex>
+#include <cstring>
+#include <atomic>
+#include <iostream>
 #include <cctype>
 #include <memory>
- #include "mqtt/async_client.h"
+#include "mqtt/async_client.h"
 
 
 using namespace std::literals::chrono_literals;
 using namespace std;
 std::mutex _mutex;
- const std::string chipname = "gpiochip0";
- gpiod::chip chip;
- gpiod::line ln_led;
- gpiod::line ln_pushButton;
- const int led_pin =  13;
- const int pushbutton_pin =  26;
-  static bool finished=false;
+const std::string chipname = "gpiochip0";
+gpiod::chip chip;
+gpiod::line ln_led;
+gpiod::line ln_pushButton;
+const int led_pin =  13;
+const int pushbutton_pin =  26;
+static bool finished=false;
 
 
- const string DFLT_SERVER_ADDRESS	{ "ws://broker.hivemq.com:8000" };
+const string DFLT_SERVER_ADDRESS	{ "ws://broker.hivemq.com:8000" };
 const string CLIENT_ID				{ "paho_cpp_async_publish" };
 const string PERSIST_DIR			{ "./persist" };
 
@@ -70,19 +70,16 @@ void eventHandler(mqtt::async_client_ptr cli){
             std::cout << " line: " << event.source.offset();
             std::cout << std::endl;
             ln_led.set_value(1);
-             std::this_thread::sleep_for(0.5s);
-             ln_led.set_value(0);
-             std::this_thread::sleep_for(0.5s);
-              ln_led.set_value(1);
-             std::this_thread::sleep_for(0.5s);
-              ln_led.set_value(0);
-               std::this_thread::sleep_for(0.5s);
-            cli->publish("event_ebc", "clicked !!!")->wait();
-             std::cout << "Message sent! "<< std::endl;
-
+            std::this_thread::sleep_for(0.5s);
+            ln_led.set_value(0);
+            std::this_thread::sleep_for(0.5s);
+            ln_led.set_value(1);
+            std::this_thread::sleep_for(0.5s);
+            ln_led.set_value(0);
+            std::this_thread::sleep_for(0.5s);
+            cli->publish("data_ebc", "clicked !!!")->wait();
+            std::cout << "Message sent! "<< std::endl;
             res=!res;
-
-
         }
    }
 }
@@ -95,10 +92,10 @@ int main(int argc, char **argv)
 	auto cli = std::make_shared<mqtt::async_client>(DFLT_SERVER_ADDRESS, CLIENT_ID);
     // Connect options for a persistent session and automatic reconnects.
 	auto connOpts = mqtt::connect_options_builder()
-		.clean_session(false)
+		.clean_session(true)
 		.automatic_reconnect( std::chrono::seconds(2),  std::chrono::seconds(30))
 		.finalize();
-    auto TOPICS = mqtt::string_collection::create({ "data/#", "command" });
+    auto TOPICS = mqtt::string_collection::create({ "data_ebc", "command" });
 	const vector<int> QOS { 0, 1 };
 
 	std::cout << "  ...OK" << endl;
@@ -121,7 +118,6 @@ int main(int argc, char **argv)
 
         std::cout<<"Starting  listening for events thread.."<<std::endl;
 
-
          // Consume messages in this thread
 		while (true) {
 			auto msg = cli->consume_message();
@@ -133,8 +129,8 @@ int main(int argc, char **argv)
 				std::cout << "Exit command received" << endl;
 				break;
 			}
-
-			//std::cout << msg->get_topic() << ": " << msg->to_string() << endl;
+            if (msg->get_topic() == "data_ebc")
+			  std::cout << msg->get_topic() << ": " << msg->to_string() << endl;
 
 		}
 
